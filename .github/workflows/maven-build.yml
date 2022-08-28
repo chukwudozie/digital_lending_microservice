@@ -50,6 +50,7 @@ jobs:
         run: mvn -B clean package --file pom.xml -Dspring.profiles.active=local
         env:
           DB_PORT: ${{ job.services.mysql.ports[3306] }}
+          DB_HOST: localhost
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         with:
