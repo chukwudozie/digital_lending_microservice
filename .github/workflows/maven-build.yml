@@ -27,11 +27,12 @@ jobs:
           DB_USER: root
           DB_PASSWORD: '123456'
           DB_HOST: localhost
-        options: >-
-          --health-cmd="mysql -h localhost -u root -p123456 -D digital_learning -e "SELECT 1" | grep -q '^1' || exit 1
-          --health-interval=10s 
-          --health-timeout=5s 
-          --health-retries=5
+        options:
+          healthcheck:
+            test: mysql ${MYSQL_DATABASE} --user=${MYSQL_USER} --password='${MYSQL_PASSWORD}' --silent --execute "SELECT 1;"
+            interval: 30s
+            timeout: 10s
+            retries: 5
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
