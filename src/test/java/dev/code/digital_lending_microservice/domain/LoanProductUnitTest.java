@@ -40,7 +40,7 @@ class LoanProductUnitTest {
 
     @Test
     void testLoanProductAInterest_shouldReturn10() {
-        assertThat(loanProductA.getInterest()).isEqualTo(10.1);
+        assertThat(loanProductA.getInterest()).isEqualTo(10.2);
     }
 
 
