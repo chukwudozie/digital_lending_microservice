@@ -46,7 +46,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
       - name: Build and test with maven
-        run: mvn -B clean package --file pom.xml -Dspring.profiles.active=default
+        run: mvn -B clean package --file pom.xml -Dspring.profiles.active=local
         env:
           DB_PORT: ${{ job.services.mysql.ports[3306] }}
       - name: Publish Test Report
