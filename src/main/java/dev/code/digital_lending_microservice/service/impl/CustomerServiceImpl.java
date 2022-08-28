@@ -55,6 +55,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void deleteCustomer(Long id) {
+        Customer customer = customerRepository.findById(id)
+                        .orElseThrow(() -> new LoanException("Invalid id "+id));
+        customerRepository.delete(customer);
 
     }
 
