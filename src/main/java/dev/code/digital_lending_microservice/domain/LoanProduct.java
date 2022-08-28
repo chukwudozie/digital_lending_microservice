@@ -1,4 +1,4 @@
-package dev.code.digital_lending_microservice;
+package dev.code.digital_lending_microservice.domain;
 
 import lombok.Getter;
 import lombok.Setter;
