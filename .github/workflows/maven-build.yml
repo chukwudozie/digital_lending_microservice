@@ -20,13 +20,13 @@ jobs:
       mysql:
         # Docker Hub image
         image: mysql:8.0.30-oracle
+        hostname: mysql
         ports:
           - "3306:3306"
         env:
           DB_DATABASE: digital_learning
           DB_USER: root
           DB_PASSWORD: '123456'
-          DB_HOST: localhost
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -48,6 +48,8 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
       - name: Build and test with maven
         run: mvn -B clean package --file pom.xml -Dspring.profiles.active=default
+        env:
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         with:
