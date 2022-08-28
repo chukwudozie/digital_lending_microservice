@@ -1,0 +1,10 @@
+services:
+  digital-learning-service-mysql:
+    image: mysql:8.0.30-oracle
+    hostname: digital-learning-service-mysql
+    container_name: digital-learning-service-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=digital_learning
+    ports:
+      - "3306:3306"
