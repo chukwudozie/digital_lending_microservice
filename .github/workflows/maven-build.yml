@@ -25,7 +25,8 @@ jobs:
         env:
           DB_DATABASE: digital_learning
           DB_USER: root
-          DB_PASSWORD: '123456'
+          DB_PASSWORD: 123456
+          MYSQL_HOST: localhost
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
