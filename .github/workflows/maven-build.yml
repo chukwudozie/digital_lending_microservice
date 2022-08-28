@@ -47,8 +47,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
       - name: Build and test with maven
-        env:
-          DB_PORT: ${{ job.services.mysql.ports[3306] }}
         run: mvn -B clean package --file pom.xml -Dspring.profiles.active=default
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
