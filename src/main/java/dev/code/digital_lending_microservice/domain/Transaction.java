@@ -20,11 +20,17 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String loanType;
+
     private String status;
 
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "account_number",
+            referencedColumnName = "phone_number"
+    )
     private Customer customer;
 
 }

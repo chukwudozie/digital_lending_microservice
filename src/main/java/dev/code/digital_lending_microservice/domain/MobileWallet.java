@@ -22,6 +22,10 @@ public class MobileWallet {
     private long loanMaximumQualification;
 
     @OneToOne
+    @JoinColumn(
+            name = "account_number",
+            referencedColumnName = "phone_number"
+    )
     private Customer customer;
 
     private double walletBalance;

@@ -23,7 +23,8 @@ public class Customer {
     private String firstName;
     
     private String lastName;
-    
+
+    @Column(name = "phone_number")
     private String phoneNumber;
     
     private String password;
