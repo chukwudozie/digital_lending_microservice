@@ -2,7 +2,7 @@ package dev.code.digital_lending_microservice.service.impl;
 
 import dev.code.digital_lending_microservice.domain.Customer;
 import dev.code.digital_lending_microservice.exception.LoanException;
-import dev.code.digital_lending_microservice.payload.request.CreateCustomerDto;
+import dev.code.digital_lending_microservice.payload.request.CustomerDto;
 import dev.code.digital_lending_microservice.repository.CustomerRepository;
 import dev.code.digital_lending_microservice.service.CustomerService;
 
@@ -15,7 +15,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer saveCustomer(CreateCustomerDto customer) {
+    public Customer saveCustomer(CustomerDto customer) {
         if (customerRepository.existsByPhoneNumber(customer.getPhoneNumber())){
             throw new LoanException("Phone Number already exist");
         }
@@ -29,11 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new LoanException("Provide valid First name and last name");
         }
         Customer newCustomer = new Customer();
-        newCustomer.setFirstName(customer.getFirstName());
-        newCustomer.setLastName(customer.getLastName());
-        newCustomer.setEmail(customer.getEmail());
-        newCustomer.setPassword(customer.getPassword());
-        newCustomer.setPhoneNumber(customer.getPhoneNumber());
+        getCustomerFromDto(newCustomer, customer);
        return customerRepository.save(newCustomer);
 
     }
@@ -50,12 +46,24 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer updateCustomer(Long id) {
-        return null;
+    public Customer updateCustomer(CustomerDto customerDto, Long id) {
+        Customer savedCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new LoanException("Invalid Id "+id));
+       getCustomerFromDto(savedCustomer, customerDto);
+        return customerRepository.save(savedCustomer);
     }
 
     @Override
     public void deleteCustomer(Long id) {
+
+    }
+
+    private void getCustomerFromDto(Customer customer, CustomerDto customerDto){
+        customer.setFirstName(customerDto.getFirstName());
+        customer.setLastName(customerDto.getLastName());
+        customer.setEmail(customerDto.getEmail());
+        customer.setPassword(customerDto.getPassword());
+        customer.setPhoneNumber(customerDto.getPhoneNumber());
 
     }
 }
