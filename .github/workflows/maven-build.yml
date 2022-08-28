@@ -20,7 +20,6 @@ jobs:
       mysql:
         # Docker Hub image
         image: mysql:8.0.30-oracle
-        hostname: mysql
         ports:
           - "3306:3306"
         env:
