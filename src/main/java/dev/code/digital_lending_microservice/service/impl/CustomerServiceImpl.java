@@ -19,6 +19,15 @@ public class CustomerServiceImpl implements CustomerService {
         if (customerRepository.existsByPhoneNumber(customer.getPhoneNumber())){
             throw new LoanException("Phone Number already exist");
         }
+
+        if (customer.getPhoneNumber().length() != 11){
+            throw new LoanException("Phone Number must be 11 digits");
+        }
+
+        if(customer.getFirstName() == null || customer.getLastName() == null
+                || customer.getFirstName().isEmpty() || customer.getLastName().isEmpty()){
+            throw new LoanException("Provide valid First name and last name");
+        }
         Customer newCustomer = new Customer();
         newCustomer.setFirstName(customer.getFirstName());
         newCustomer.setLastName(customer.getLastName());
@@ -31,12 +40,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getCustomerById(Long id) {
-        return null;
+        return customerRepository.findById(id).orElseThrow(() -> new LoanException("Invalid Id"+id));
     }
 
     @Override
     public Customer getCustomerByPhoneNumber(String phoneNumber) {
-        return null;
+        return customerRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new LoanException("Invalid phone Number"));
     }
 
     @Override
