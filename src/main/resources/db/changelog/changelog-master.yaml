@@ -6,3 +6,6 @@ databaseChangeLog:
   - include:
       file: 002-add-amount-column-transaction.sql
       relativeToChangelogFile: true
+  - include:
+      file: 003-add-pendingLoan-column-wallet.sql
+      relativeToChangelogFile: true
