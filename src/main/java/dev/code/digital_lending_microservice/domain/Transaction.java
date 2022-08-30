@@ -1,6 +1,7 @@
 package dev.code.digital_lending_microservice.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "transaction")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class Transaction {
@@ -21,6 +23,8 @@ public class Transaction {
     private long id;
 
     private String loanType;
+
+    private Double amount;
 
     private String status;
 

@@ -3,3 +3,6 @@ databaseChangeLog:
   - include:
       file: 001-init-tables.sql
       relativeToChangelogFile: true
+  - include:
+      file: 002-add-amount-column-transaction.sql
+      relativeToChangelogFile: true
