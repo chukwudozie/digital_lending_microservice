@@ -2,6 +2,9 @@ package dev.code.digital_lending_microservice.service.impl;
 
 import java.util.Optional;
 
+import dev.code.digital_lending_microservice.domain.Customer;
+import dev.code.digital_lending_microservice.exception.WalletExistsException;
+import dev.code.digital_lending_microservice.payload.request.CustomerDto;
 import org.springframework.stereotype.Service;
 
 import dev.code.digital_lending_microservice.domain.LoanProduct;
@@ -55,9 +58,26 @@ public class MobileWalletServiceImpl implements MobileWalletService {
         return getWalletByAccountNumber(accountNumber);
     }
 
+    @Override
+    public MobileWallet createWallet(Customer customer) {
+        String phoneNumber = customer.getPhoneNumber();
+        Optional<MobileWallet> mobileWalletByCustomerPhoneNumber = mobileWalletRepository.findMobileWalletByCustomerPhoneNumber(phoneNumber);
+        if (mobileWalletByCustomerPhoneNumber.isPresent()){
+            throw new WalletExistsException("Wallet already exists");
+        }
+        MobileWallet wallet = MobileWallet.builder()
+                .walletBalance(0.00)
+                .pendingLoan(0.00)
+                .customer(customer)
+                .loanMaximumQualification(0)
+                .build();
+        return mobileWalletRepository.save(wallet);
+    }
+
     private MobileWallet getWalletByAccountNumber(final String accountNumber) {
         log.info("looking for wallet with account number %s".formatted(accountNumber));
         Optional<MobileWallet> optWallet = mobileWalletRepository.findMobileWalletByCustomerPhoneNumber(accountNumber);
         return optWallet.orElseThrow(() -> new MobileWalletNotFoundException("wallet with account number %s not found".formatted(accountNumber)));
     }
+
 }

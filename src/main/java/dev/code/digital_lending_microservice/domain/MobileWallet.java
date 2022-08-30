@@ -1,15 +1,13 @@
 package dev.code.digital_lending_microservice.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "mobile_wallet")
