@@ -18,4 +18,5 @@ public class TransactionResponse {
     private double amount;
     private String loanType;
     private String accountNumber;
+    private String description;
 }
