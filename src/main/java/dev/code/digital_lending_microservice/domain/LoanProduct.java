@@ -17,6 +17,12 @@ public enum LoanProduct {
         public String getType() {
             return "PRODUCT B";
         }
+    },
+    INVALID(0, 0.0, 0) {
+        @Override
+        public String getType() {
+            return "INVALID";
+        }
     };
     private final double maxAllowance;
 
@@ -43,4 +49,11 @@ public enum LoanProduct {
     }
 
     public abstract String getType();
+
+    public static LoanProduct getEnum(final String type) {
+        final String toUpperCase = type.toUpperCase();
+        if (toUpperCase.contains("A") && !toUpperCase.contains("B")) return PRODUCT_A;
+        if (toUpperCase.contains("B") && !toUpperCase.contains("A")) return PRODUCT_B;
+        return INVALID;
+    }
 }

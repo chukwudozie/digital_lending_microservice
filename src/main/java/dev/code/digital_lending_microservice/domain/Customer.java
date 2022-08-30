@@ -1,6 +1,8 @@
 package dev.code.digital_lending_microservice.domain;
 
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Customer {
+public class Customer implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

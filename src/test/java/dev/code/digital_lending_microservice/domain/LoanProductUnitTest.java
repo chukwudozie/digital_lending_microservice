@@ -71,4 +71,14 @@ class LoanProductUnitTest {
         final LoanProduct secondLoanProductB = LoanProduct.PRODUCT_B;
         assertThat(secondLoanProductB).isEqualTo(loanProductB);
     }
+
+    @Test
+    void testVerifyLoanTypeWhenGivenAStringValue_shouldNotBeNull() {
+        LoanProduct typeA = LoanProduct.getEnum("A");
+        LoanProduct typeB = LoanProduct.getEnum("rb");
+        LoanProduct typeC = LoanProduct.getEnum("rrrr");
+        assertThat(typeA).isNotNull();
+        assertThat(typeB).isNotNull();
+        assertThat(typeC).isEqualTo(LoanProduct.INVALID);
+    }
 }
