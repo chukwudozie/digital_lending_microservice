@@ -36,3 +36,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+*.iml
+HELP.md
