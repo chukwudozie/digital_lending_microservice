@@ -1,5 +1,7 @@
 package dev.code.digital_lending_microservice.service.impl;
 
+import dev.code.digital_lending_microservice.payload.response.CreateCustomerResponse;
+import dev.code.digital_lending_microservice.service.MobileWalletService;
 import org.springframework.stereotype.Service;
 
 import dev.code.digital_lending_microservice.domain.Customer;
@@ -8,13 +10,17 @@ import dev.code.digital_lending_microservice.payload.request.CustomerDto;
 import dev.code.digital_lending_microservice.repository.CustomerRepository;
 import dev.code.digital_lending_microservice.service.CustomerService;
 
+import java.time.LocalDateTime;
+
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final MobileWalletService walletService;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, MobileWalletService walletService) {
         this.customerRepository = customerRepository;
+        this.walletService = walletService;
     }
 
     @Override
@@ -33,7 +39,9 @@ public class CustomerServiceImpl implements CustomerService {
         }
         Customer newCustomer = new Customer();
         getCustomerFromDto(newCustomer, customer);
-        return customerRepository.save(newCustomer);
+        Customer savedCustomer = customerRepository.save(newCustomer);
+        walletService.createWallet(savedCustomer);
+        return savedCustomer;
 
     }
 
@@ -62,6 +70,17 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new LoanException("Invalid id " + id));
         customerRepository.delete(customer);
 
+    }
+
+    @Override
+    public CreateCustomerResponse getCreateCustomerResponse(CustomerDto customerDto) {
+        Customer customer = saveCustomer(customerDto);
+        return CreateCustomerResponse.builder()
+                .accountNumber(customer.getPhoneNumber())
+                .status("SUCCESS")
+                .transactDate(LocalDateTime.now())
+                .fullName("%s %s".formatted(customer.getFirstName(),customer.getLastName()))
+                .build();
     }
 
     private void getCustomerFromDto(Customer customer, CustomerDto customerDto) {

@@ -16,8 +16,26 @@ Sample
 
 ```json
     {
-        "accountNumber": "07036771035",
-        "amount": 1000,
-        "type": "A"
-    }
+  "accountNumber": "07036771035",
+  "amount": 1000,
+  "type": "A"
+}
 ```
+
+### Create a Customer with postman on
+
+url: http://localhost:8080/customer/request
+
++ with request body:
++ Sample
+
+```json
+    {
+  "firstName": "first name",
+  "lastName": "last name",
+  "phoneNumber": "07036771035",
+  "email": "xxx@gmail.com",
+  "password": "xxxx"
+}
+```
+

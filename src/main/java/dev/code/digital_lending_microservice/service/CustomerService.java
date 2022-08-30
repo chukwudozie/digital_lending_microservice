@@ -2,6 +2,7 @@ package dev.code.digital_lending_microservice.service;
 
 import dev.code.digital_lending_microservice.domain.Customer;
 import dev.code.digital_lending_microservice.payload.request.CustomerDto;
+import dev.code.digital_lending_microservice.payload.response.CreateCustomerResponse;
 
 public interface CustomerService {
 
@@ -14,4 +15,6 @@ public interface CustomerService {
     Customer updateCustomer(CustomerDto customerDto, Long id);
 
     void deleteCustomer(Long id);
+
+    CreateCustomerResponse getCreateCustomerResponse(CustomerDto customerDto);
 }
