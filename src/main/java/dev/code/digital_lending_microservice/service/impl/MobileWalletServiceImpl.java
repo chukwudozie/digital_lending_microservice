@@ -44,7 +44,9 @@ public class MobileWalletServiceImpl implements MobileWalletService {
         final double interest = loanType.getInterest();
         final double loanRePayment = interest * amount / (1 - Math.pow((1 + interest), loanType.getTenure()));
 
+        log.info("setting pending loan");
         wallet.setPendingLoan(loanRePayment);
+        log.info("saving wallet  " + wallet);
         return new MobileWalletStatusDTO(mobileWalletRepository.save(wallet), "SUCCESS");
     }
 

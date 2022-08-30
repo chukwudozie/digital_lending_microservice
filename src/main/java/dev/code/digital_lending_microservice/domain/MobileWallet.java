@@ -30,5 +30,6 @@ public class MobileWallet {
 
     private double walletBalance;
 
+    @Column(name = "pending_loan")
     private double pendingLoan;
 }
