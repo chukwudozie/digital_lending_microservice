@@ -29,4 +29,6 @@ public class MobileWallet {
     private Customer customer;
 
     private double walletBalance;
+
+    private double pendingLoan;
 }

@@ -4,12 +4,13 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import dev.code.digital_lending_microservice.domain.LoanProduct;
 import dev.code.digital_lending_microservice.domain.MobileWallet;
 import dev.code.digital_lending_microservice.exception.LoanException;
+import dev.code.digital_lending_microservice.exception.MobileWalletNotFoundException;
 import dev.code.digital_lending_microservice.payload.request.MobileWalletStatusDTO;
 import dev.code.digital_lending_microservice.repository.MobileWalletRepository;
 import dev.code.digital_lending_microservice.service.MobileWalletService;
-import dev.code.digital_lending_microservice.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +26,8 @@ public class MobileWalletServiceImpl implements MobileWalletService {
     private final MobileWalletRepository mobileWalletRepository;
 
     @Override
-    public MobileWalletStatusDTO addAmountToWallet(final String accountNumber, final Double amount) {
+    public MobileWalletStatusDTO addLoanAmountToWallet(final String accountNumber, final Double amount,
+                                                       final LoanProduct loanType) {
         final MobileWallet wallet = getWalletByAccountNumber(accountNumber);
         final double previousAmount = wallet.getWalletBalance();
 
@@ -38,12 +40,22 @@ public class MobileWalletServiceImpl implements MobileWalletService {
             return new MobileWalletStatusDTO(wallet, "FAILURE");
         }
         wallet.setWalletBalance(previousAmount + amount);
+
+        final double interest = loanType.getInterest();
+        final double loanRePayment = interest * amount / (1 - Math.pow((1 + interest), loanType.getTenure()));
+
+        wallet.setPendingLoan(loanRePayment);
         return new MobileWalletStatusDTO(mobileWalletRepository.save(wallet), "SUCCESS");
+    }
+
+    @Override
+    public MobileWallet getWallet(final String accountNumber) {
+        return getWalletByAccountNumber(accountNumber);
     }
 
     private MobileWallet getWalletByAccountNumber(final String accountNumber) {
         log.info("looking for wallet with account number %s".formatted(accountNumber));
         Optional<MobileWallet> optWallet = mobileWalletRepository.findMobileWalletByCustomerPhoneNumber(accountNumber);
-        return optWallet.orElseThrow(() -> new LoanException("wallet with account number %s not found".formatted(accountNumber)));
+        return optWallet.orElseThrow(() -> new MobileWalletNotFoundException("wallet with account number %s not found".formatted(accountNumber)));
     }
 }

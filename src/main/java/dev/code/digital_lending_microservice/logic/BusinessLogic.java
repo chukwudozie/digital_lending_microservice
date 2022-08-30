@@ -1,12 +1,16 @@
 package dev.code.digital_lending_microservice.logic;
 
+import static dev.code.digital_lending_microservice.domain.LoanProduct.INVALID;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
 import dev.code.digital_lending_microservice.domain.Customer;
 import dev.code.digital_lending_microservice.domain.LoanProduct;
+import dev.code.digital_lending_microservice.domain.MobileWallet;
 import dev.code.digital_lending_microservice.domain.Transaction;
 import dev.code.digital_lending_microservice.payload.request.LoanRequest;
 import dev.code.digital_lending_microservice.payload.request.MobileWalletStatusDTO;
@@ -37,8 +41,25 @@ public class BusinessLogic {
 
         final LoanProduct loanType = LoanProduct.getEnum(type);
 
-        final MobileWalletStatusDTO mobileWalletStatusDTO = walletService.addAmountToWallet(accountNumber, amount);
+        if (Objects.equals(loanType, INVALID)) {
+            return getFailedTransactionResponse(amount, accountNumber);
+        }
+
+
         final Customer customer = customerService.getCustomerByPhoneNumber(accountNumber);
+
+        MobileWallet wallet = walletService.getWallet(accountNumber);
+
+        final double customerPreviouslyAcquiredLoan = wallet.getPendingLoan();
+
+
+
+        if (customerPreviouslyAcquiredLoan != 0.0) {
+            return getFailedTransactionResponse(amount, accountNumber);
+        }
+
+        final MobileWalletStatusDTO mobileWalletStatusDTO = walletService.addLoanAmountToWallet(accountNumber, amount, loanType);
+
         Transaction transaction =
                 Transaction.builder()
                         .loanType(loanType.getType())
@@ -48,5 +69,16 @@ public class BusinessLogic {
                         .customer(customer)
                         .build();
         return transactionService.saveTransaction(transaction);
+    }
+
+    private static TransactionResponse getFailedTransactionResponse(final double amount, final String accountNumber) {
+        log.warn("Loan Type requested Not valid");
+        return TransactionResponse.builder()
+                .amount(amount)
+                .accountNumber(accountNumber)
+                .status("FAILED")
+                .transactDate(LocalDateTime.now(ZoneId.of("UTC")))
+                .loanType("INVALID")
+                .build();
     }
 }

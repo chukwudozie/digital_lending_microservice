@@ -28,7 +28,7 @@ class DigitalLendingMicroserviceApplicationTests {
             .waitingFor(Wait.forLogMessage("*ready for connections*", 1));
 
     @DynamicPropertySource
-    static void postgresqlProperties(DynamicPropertyRegistry registry) {
+    static void mysqlProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", MYSQL::getJdbcUrl);
         registry.add("spring.datasource.username", () -> "test");
         registry.add("spring.datasource.password", () -> "test");
