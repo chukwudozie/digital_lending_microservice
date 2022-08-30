@@ -41,24 +41,29 @@ public class BusinessLogic {
 
         final LoanProduct loanType = LoanProduct.getEnum(type);
 
-        if (Objects.equals(loanType, INVALID)) {
-            return getFailedTransactionResponse(amount, accountNumber);
-        }
-
 
         final Customer customer = customerService.getCustomerByPhoneNumber(accountNumber);
 
         MobileWallet wallet = walletService.getWallet(accountNumber);
 
-        final double customerPreviouslyAcquiredLoan = wallet.getPendingLoan();
-
-
-
-        if (customerPreviouslyAcquiredLoan != 0.0) {
-            return getFailedTransactionResponse(amount, accountNumber);
+        if (Objects.equals(loanType, INVALID)) {
+            String description = "LoanProduct selected is invalid :face_vomiting:";
+            Transaction failedTransaction = createFailedTransaction(customer, amount, loanType, description);
+            return transactionService.saveTransaction(failedTransaction);
         }
 
-        final MobileWalletStatusDTO mobileWalletStatusDTO = walletService.addLoanAmountToWallet(accountNumber, amount, loanType);
+
+        double loanMaximumQualification = wallet.getLoanMaximumQualification();
+
+        if (loanMaximumQualification < amount && wallet.getPendingLoan() != 0.0) {
+            String description = "Not qualified for loan :face_with_head_bandage:";
+            Transaction failedTransaction = createFailedTransaction(customer, amount, loanType, description);
+            return transactionService.saveTransaction(failedTransaction);
+        }
+
+
+        final MobileWalletStatusDTO mobileWalletStatusDTO = walletService.addLoanAmountToWallet(accountNumber, amount, loanType
+                , loanMaximumQualification);
 
         Transaction transaction =
                 Transaction.builder()
@@ -67,18 +72,20 @@ public class BusinessLogic {
                         .status(mobileWalletStatusDTO.transactionStatus())
                         .createdAt(LocalDateTime.now(ZoneId.of("UTC")))
                         .customer(customer)
+                        .description("transactions successful :tada:")
                         .build();
         return transactionService.saveTransaction(transaction);
     }
 
-    private static TransactionResponse getFailedTransactionResponse(final double amount, final String accountNumber) {
-        log.warn("Loan Type requested Not valid");
-        return TransactionResponse.builder()
+    private Transaction createFailedTransaction(final Customer customer, final double amount, LoanProduct loanType, String description) {
+        return Transaction.builder()
                 .amount(amount)
-                .accountNumber(accountNumber)
                 .status("FAILED")
-                .transactDate(LocalDateTime.now(ZoneId.of("UTC")))
-                .loanType("INVALID")
+                .customer(customer)
+                .loanType(loanType.getType())
+                .createdAt(LocalDateTime.now(ZoneId.of("UTC")))
+                .description(description)
                 .build();
+
     }
 }

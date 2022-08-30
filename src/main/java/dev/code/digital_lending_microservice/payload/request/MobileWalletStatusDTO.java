@@ -1,7 +1,6 @@
 package dev.code.digital_lending_microservice.payload.request;
 
 import dev.code.digital_lending_microservice.domain.MobileWallet;
-import lombok.Value;
 
 /**
  * Created by @author Ifeanyichukwu Otiwa

@@ -30,27 +30,44 @@ public class MobileWalletServiceImpl implements MobileWalletService {
 
     @Override
     public MobileWalletStatusDTO addLoanAmountToWallet(final String accountNumber, final Double amount,
-                                                       final LoanProduct loanType) {
+                                                       final LoanProduct loanType, double maxQualification) {
         final MobileWallet wallet = getWalletByAccountNumber(accountNumber);
         final double previousAmount = wallet.getWalletBalance();
 
-        if (amount == 5000) {
+        if (amount == 5000 || amount < 0) {
             log.warn("User attempted to pay in %s".formatted(amount));
-            throw new LoanException("please you not required to pay in %s".formatted(amount));
-        }
-        if (amount < 0 && previousAmount < (-amount - 500)) {
-            log.warn("Money in wallet is too low for transaction ");
-            return new MobileWalletStatusDTO(wallet, "FAILURE");
+            throw new LoanException("please you are not required to pay in %f".formatted(amount));
         }
         wallet.setWalletBalance(previousAmount + amount);
 
-        final double interest = loanType.getInterest();
-        final double loanRePayment = interest * amount / (1 - Math.pow((1 + interest), loanType.getTenure()));
+        if (maxQualification > 0) {
+            wallet.setLoanMaximumQualification(Math.round(maxQualification - amount));
+        } else {
+            wallet.setLoanMaximumQualification(Math.round(loanType.getMaxAllowance() - amount));
+        }
+
+        final double interest = loanType.getInterest() / 100;
+        final int numberOfYears = loanType.getTenure();
+
+        final double loanRePayment = calculateLoanRePayment(amount, interest, numberOfYears);
+
+
+        log.debug("loan repayment amount %s".formatted(loanRePayment));
 
         log.info("setting pending loan");
-        wallet.setPendingLoan(loanRePayment);
+
+        final double previouslyAcquiredLoan = wallet.getPendingLoan();
+
+
+        wallet.setPendingLoan(loanRePayment + previouslyAcquiredLoan);
+        log.info("pending loan %s".formatted(wallet.toString()));
+
         log.info("saving wallet  " + wallet);
         return new MobileWalletStatusDTO(mobileWalletRepository.save(wallet), "SUCCESS");
+    }
+
+    private double calculateLoanRePayment(final Double amount, final double interest, final int numberOfYears) {
+        return amount * Math.pow(1 + interest, numberOfYears);
     }
 
     @Override
@@ -80,4 +97,13 @@ public class MobileWalletServiceImpl implements MobileWalletService {
         return optWallet.orElseThrow(() -> new MobileWalletNotFoundException("wallet with account number %s not found".formatted(accountNumber)));
     }
 
+    public MobileWalletStatusDTO withdrawFromWallet(String accountNumber, Double amount) {
+        final MobileWallet wallet = getWalletByAccountNumber(accountNumber);
+        final double previousAmount = wallet.getWalletBalance();
+        if (previousAmount - amount - 500 < 0) {
+            log.warn("Money in wallet is too low for transaction ");
+            return new MobileWalletStatusDTO(wallet, "FAILURE");
+        }
+        return null; //TODO create logic for Withdrawal
+    }
 }

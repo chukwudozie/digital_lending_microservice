@@ -38,6 +38,7 @@ public class TransactionServiceImpl implements TransactionService {
                         .amount(transaction.getAmount())
                         .loanType(transaction.getLoanType())
                         .accountNumber(transaction.getCustomer().getPhoneNumber())
+                        .description(transaction.getDescription())
                         .build();
     }
 

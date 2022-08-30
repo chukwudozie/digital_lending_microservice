@@ -37,4 +37,5 @@ public class Transaction {
     )
     private Customer customer;
 
+    private String description;
 }

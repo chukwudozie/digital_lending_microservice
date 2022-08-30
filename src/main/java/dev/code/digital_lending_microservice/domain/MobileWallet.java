@@ -11,6 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "mobile_wallet")
+@ToString
 public class MobileWallet {
 
     @Id

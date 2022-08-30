@@ -1,18 +1,24 @@
 package dev.code.digital_lending_microservice.service.impl;
 
+import dev.code.digital_lending_microservice.domain.MobileWallet;
 import dev.code.digital_lending_microservice.payload.response.CreateCustomerResponse;
 import dev.code.digital_lending_microservice.service.MobileWalletService;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import dev.code.digital_lending_microservice.domain.Customer;
 import dev.code.digital_lending_microservice.exception.LoanException;
 import dev.code.digital_lending_microservice.payload.request.CustomerDto;
 import dev.code.digital_lending_microservice.repository.CustomerRepository;
 import dev.code.digital_lending_microservice.service.CustomerService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
 @Service
+@Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
@@ -40,7 +46,12 @@ public class CustomerServiceImpl implements CustomerService {
         Customer newCustomer = new Customer();
         getCustomerFromDto(newCustomer, customer);
         Customer savedCustomer = customerRepository.save(newCustomer);
-        walletService.createWallet(savedCustomer);
+        final MobileWallet createdWallet = walletService.createWallet(savedCustomer);
+        if (createdWallet == null) {
+            log.info("Wallet was not created");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not create wallet");
+        }
+        log.info("Wallet created with account number: %s".formatted(createdWallet.getCustomer().getPhoneNumber()));
         return savedCustomer;
 
     }

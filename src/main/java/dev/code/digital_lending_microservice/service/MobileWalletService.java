@@ -7,7 +7,8 @@ import dev.code.digital_lending_microservice.payload.request.MobileWalletStatusD
 
 public interface MobileWalletService {
 
-    MobileWalletStatusDTO addLoanAmountToWallet(String accountNumber, Double amount, LoanProduct loanType);
+    MobileWalletStatusDTO addLoanAmountToWallet(String accountNumber, Double amount, LoanProduct loanType,
+                                                double loanMaximumQualification);
 
     MobileWallet getWallet(String accountNumber);
 
