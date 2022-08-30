@@ -20,4 +20,15 @@ public class LendExceptionHandler {
         return new ResponseEntity<>(payLoad,badRequest);
 
     }
+
+
+    @ExceptionHandler(MobileWalletNotFoundException.class)
+    public ResponseEntity<Object> walletNotFoundRequestHandler(MobileWalletNotFoundException e){
+        HttpStatus notFound = HttpStatus.NOT_FOUND;
+        String errorType = e.getClass().getSimpleName().toLowerCase();
+        ExceptionPayload payLoad = new ExceptionPayload(e.getMessage(),e, errorType, notFound,
+                ZonedDateTime.now(ZoneId.of("UTC")));
+        return new ResponseEntity<>(payLoad,notFound);
+
+    }
 }
